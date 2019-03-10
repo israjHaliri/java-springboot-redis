@@ -1,12 +1,9 @@
 package com.haliri.israj.javaspringbootredis.repository;
 
-import com.haliri.israj.javaspringbootredis.domain.User;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,37 +12,39 @@ import java.util.Map;
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
-    private RedisTemplate<String,User> redisTemplate;
+    private String key = "student";
+
+    private RedisTemplate<String, String> redisTemplate;
 
     private HashOperations hashOperations;
 
-    public UserRepositoryImpl(RedisTemplate<String, User> redisTemplate) {
+    public UserRepositoryImpl(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
-        hashOperations = redisTemplate.opsForHash();
+        this.hashOperations = redisTemplate.opsForHash();
     }
 
     @Override
-    public void save(User user) {
-        hashOperations.put("USER",user.getId(),user);
+    public void save(String id, String user) {
+        hashOperations.putIfAbsent(key, id, user);
     }
 
     @Override
-    public Map<String,User> findAll() {
-        return hashOperations.entries("USER");
+    public Map<String, Object> findAll() {
+        return hashOperations.entries(key);
     }
 
     @Override
-    public User findById(String id) {
-        return (User) hashOperations.get("USER",id);
+    public String findById(String user) {
+        return (String) hashOperations.get(key, user);
     }
 
     @Override
-    public void update(User user) {
-        save(user);
+    public void update(String id, String user) {
+        hashOperations.put(key, id, user);
     }
 
     @Override
     public void delete(String id) {
-        hashOperations.delete("USER",id);
+        hashOperations.delete(key, id);
     }
 }

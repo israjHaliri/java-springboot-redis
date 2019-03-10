@@ -1,8 +1,5 @@
 package com.haliri.israj.javaspringbootredis.repository;
 
-import com.haliri.israj.javaspringbootredis.domain.User;
-
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,9 +7,13 @@ import java.util.Map;
  */
 public interface UserRepository {
 
-    void save(User user);
-    Map<String,User> findAll();
-    User findById(String id);
-    void update(User user);
+    void save(String id, String user);
+
+    Map<String, Object> findAll();
+
+    String findById(String id);
+
+    void update(String id, String user);
+
     void delete(String id);
 }
